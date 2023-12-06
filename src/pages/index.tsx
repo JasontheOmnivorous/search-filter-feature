@@ -3,25 +3,31 @@ import ProductCard from "@/components/products/ProductCard";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getProducts } from "@/store/slices/productSlice";
 import { Box } from "@mui/material";
-import { useEffect } from "react";
+import { Products } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const products = useAppSelector((store) => store.product.items);
+  const [filterProduct, setFilterProduct] = useState<Products[]>([]);
 
   useEffect(() => {
     dispatch(getProducts());
   }, []);
+
+  useEffect(() => {
+    setFilterProduct(products);
+  }, [products]);
 
   return (
     <Box
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <Box>
-        <SearchBar />
+        <SearchBar products={products} setFilterProduct={setFilterProduct} />
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
-        {products.map((product) => (
+        {filterProduct.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </Box>
