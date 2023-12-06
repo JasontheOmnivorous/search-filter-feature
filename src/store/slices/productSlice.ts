@@ -1,5 +1,6 @@
 import { ProductSliceState } from "@/types/product";
-import { createSlice } from "@reduxjs/toolkit";
+import { config } from "@/utils/config";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState: ProductSliceState = {
   items: [],
@@ -7,8 +8,17 @@ const initialState: ProductSliceState = {
   error: null,
 };
 
+export const getProducts = createAsyncThunk(
+  "products/getProducts",
+  async (_, thunkApi) => {
+    const response = await fetch(`${config.apiBaseUrl}/products`);
+    const data = await response.json();
+    thunkApi.dispatch(setProducts(data));
+  }
+);
+
 const productSlice = createSlice({
-  name: "product",
+  name: "products",
   initialState,
   reducers: {
     setProducts: (state, action) => {
